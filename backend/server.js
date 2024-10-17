@@ -1,11 +1,13 @@
 import path from 'path';
 import express from 'express';
 import dotenv from 'dotenv';
-dotenv.config();
 import connectDB from './config/db.js';
 import cookieParser from 'cookie-parser';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 import userRoutes from './routes/userRoutes.js';
+import postRoutes from './routes/postRoutes.js'; // Import post routes
+
+dotenv.config();
 
 const port = process.env.PORT || 5000;
 
@@ -18,7 +20,11 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(cookieParser());
 
+// User routes
 app.use('/api/users', userRoutes);
+
+// Post routes
+app.use('/api/posts', postRoutes); // Add post routes
 
 if (process.env.NODE_ENV === 'production') {
   const __dirname = path.resolve();
@@ -33,6 +39,7 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
+// Error handling middleware
 app.use(notFound);
 app.use(errorHandler);
 
