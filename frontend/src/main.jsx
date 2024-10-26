@@ -15,7 +15,9 @@ import HomeScreen from './screens/HomeScreen';
 import LoginScreen from './screens/LoginScreen.jsx';
 import RegisterScreen from './screens/RegisterScreen.jsx';
 import ProfileScreen from './screens/ProfileScreen.jsx';
-import PrivateRoute from './components/PrivateRoute.jsx';
+import CreatePostScreen from './screens/CreatePostScreen.jsx'; // Import CreatePostScreen
+import GetPostScreen from './screens/GetPostScreen.jsx'; // Import GetPostScreen
+import PrivateRoute from './components/PrivateRoute.jsx';  // PrivateRoute component
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -23,8 +25,12 @@ const router = createBrowserRouter(
       <Route index={true} path='/' element={<HomeScreen />} />
       <Route path='/login' element={<LoginScreen />} />
       <Route path='/register' element={<RegisterScreen />} />
+      
+      {/* Protected routes */}
       <Route path='' element={<PrivateRoute />}>
         <Route path='/profile' element={<ProfileScreen />} />
+        <Route path='/create-post' element={<CreatePostScreen />} /> {/* Create Post is now a private route */}
+        <Route path='/posts' element={<GetPostScreen />} /> {/* Add GetPostScreen to display posts */}
       </Route>
     </Route>
   )

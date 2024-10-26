@@ -14,6 +14,14 @@ const postSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  codeSnippet: {
+    type: String,  // Store the MinIO URL of the uploaded code snippet
+    default: null,
+  },
+  language: {
+    type: String,  // Store the programming language of the code snippet
+    required: true,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -22,5 +30,4 @@ const postSchema = new mongoose.Schema({
 
 const Post = mongoose.model('Post', postSchema);
 
-export default Post;  // Use ES module syntax to export the Post model
-
+export default Post;

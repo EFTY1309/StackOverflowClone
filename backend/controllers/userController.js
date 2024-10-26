@@ -11,7 +11,7 @@ const authUser = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email });
 
   if (user && (await user.matchPassword(password))) {
-    // Generate token and set it in the cookie
+    // Generate token
     const token = generateToken(res, user._id);
 
     // Send user details and token in the response
@@ -19,7 +19,7 @@ const authUser = asyncHandler(async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
-      token, // Send token in the response body if needed
+      token, // Send token in the response
     });
   } else {
     res.status(401);
@@ -47,7 +47,7 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (user) {
-    // Generate token and set it in the cookie
+    // Generate token
     const token = generateToken(res, user._id);
 
     // Send user details and token in the response
@@ -55,7 +55,7 @@ const registerUser = asyncHandler(async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
-      token, // Send token in the response body if needed
+      token, // Send token in the response
     });
   } else {
     res.status(400);

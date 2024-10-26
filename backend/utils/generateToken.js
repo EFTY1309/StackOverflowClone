@@ -15,10 +15,7 @@ const generateToken = (res, userId) => {
   });
 
   // Optionally, you can also send the token in the response body
-  res.json({
-    message: 'Authentication successful',
-    token, // Send the token in the response body
-  });
+ 
 };
 
 export default generateToken;
