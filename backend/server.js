@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 import userRoutes from './routes/userRoutes.js';
 import postRoutes from './routes/postRoutes.js'; // Import post routes
+import notificationRoutes from './routes/notificationRoutes.js';
 
 dotenv.config();
 
@@ -25,6 +26,8 @@ app.use('/api/users', userRoutes);
 
 // Post routes
 app.use('/api/posts', postRoutes); // Add post routes
+
+app.use('/api/notifications', notificationRoutes);
 
 if (process.env.NODE_ENV === 'production') {
   const __dirname = path.resolve();

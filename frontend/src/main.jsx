@@ -18,6 +18,8 @@ import ProfileScreen from './screens/ProfileScreen.jsx';
 import CreatePostScreen from './screens/CreatePostScreen.jsx'; // Import CreatePostScreen
 import GetPostScreen from './screens/GetPostScreen.jsx'; // Import GetPostScreen
 import PrivateRoute from './components/PrivateRoute.jsx';  // PrivateRoute component
+import NotificationScreen from './screens/NotificationScreen.jsx';
+import ViewPostScreen from './screens/ViewPostScreen.jsx';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -31,6 +33,9 @@ const router = createBrowserRouter(
         <Route path='/profile' element={<ProfileScreen />} />
         <Route path='/create-post' element={<CreatePostScreen />} /> {/* Create Post is now a private route */}
         <Route path='/posts' element={<GetPostScreen />} /> {/* Add GetPostScreen to display posts */}
+        <Route path='/posts/:id' element={<ViewPostScreen />} />
+        <Route path="/notifications" element={<NotificationScreen />} />
+
       </Route>
     </Route>
   )

@@ -1,6 +1,7 @@
 import minioClient from '../config/minioClient.js';
 import Post from '../models/postModel.js';
 import { v4 as uuidv4 } from 'uuid';
+import { createPostNotification } from './notificationController.js';
 
 // Helper function to ensure the bucket exists in MinIO
 const ensureBucketExists = async (bucketName) => {
@@ -74,7 +75,7 @@ export const getPosts = async (req, res) => {
     }
 };
 
-// @desc    Create a new post with code snippet uploaded to MinIO
+// @desc    Create a new post with code snippet uploaded to MinIO and send notifications
 // @route   POST /api/posts
 // @access  Private
 export const createPost = async (req, res) => {
@@ -94,6 +95,7 @@ export const createPost = async (req, res) => {
         await ensureBucketExists(process.env.MINIO_BUCKET);
         codeSnippetUrl = await uploadCodeSnippetToMinIO(process.env.MINIO_BUCKET, fileName, codeSnippet);
 
+        // Create the post in MongoDB
         const post = new Post({
             user: req.user._id,
             title,
@@ -103,9 +105,29 @@ export const createPost = async (req, res) => {
         });
 
         const createdPost = await post.save();
+
+        // Populate the user's name for notification
+        await createdPost.populate('user', 'name');
+
+        // Trigger notifications for all users except the post creator
+        await createPostNotification(createdPost);
+
         res.status(201).json(createdPost);
     } catch (error) {
         console.error('Error:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+export const getPostById = async (req, res) => {
+    try {
+        const post = await Post.findById(req.params.id).populate('user', 'name');
+        if (post) {
+            res.json(post);
+        } else {
+            res.status(404).json({ message: 'Post not found' });
+        }
+    } catch (error) {
         res.status(500).json({ message: 'Server Error' });
     }
 };
