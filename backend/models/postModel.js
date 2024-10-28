@@ -20,7 +20,7 @@ const postSchema = new mongoose.Schema({
   },
   language: {
     type: String,  // Store the programming language of the code snippet
-    required: true,
+    default: null, // Make language optional
   },
   createdAt: {
     type: Date,

@@ -1,8 +1,7 @@
-// NotificationScreen.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const NotificationScreen = () => {
     const [notifications, setNotifications] = useState([]);
@@ -43,22 +42,24 @@ const NotificationScreen = () => {
     };
 
     return (
-        <div className="container mx-auto px-4">
-            <h1 className="text-2xl font-semibold mb-6">Notifications</h1>
-            <ul>
+        <div className="container mx-auto px-4 py-8">
+            <h1 className="text-3xl font-semibold mb-8 text-center text-gray-700">Notifications</h1>
+            <div className="space-y-6">
                 {notifications.map((notification) => (
-                    <li key={notification._id} className="mb-4 p-4 border rounded-lg shadow-md bg-white">
-                        <p className="text-lg">{notification.message}</p>
-                        <span className="text-sm text-gray-500">{new Date(notification.createdAt).toLocaleString()}</span>
+                    <div key={notification._id} className="p-6 border rounded-lg shadow-md bg-gradient-to-br from-white to-gray-50 hover:shadow-lg transition-shadow duration-200">
+                        <p className="text-xl font-medium text-gray-800 mb-2">{notification.message}</p>
+                        <span className="text-sm text-gray-500">
+                            {new Date(notification.createdAt).toLocaleString()}
+                        </span>
                         <button
                             onClick={() => handleViewPost(notification._id, notification.post)}
-                            className="text-blue-500 hover:underline mt-2 inline-block"
+                            className="mt-4 inline-flex items-center px-5 py-2 bg-blue-600 text-white text-sm font-semibold rounded-md shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200"
                         >
                             View Post
                         </button>
-                    </li>
+                    </div>
                 ))}
-            </ul>
+            </div>
         </div>
     );
 };

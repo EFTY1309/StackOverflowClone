@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import Loader from '../components/Loader';
 
 const ViewPostScreen = () => {
@@ -8,6 +8,7 @@ const ViewPostScreen = () => {
     const [post, setPost] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [fileContent, setFileContent] = useState(''); // New state for file content
 
     useEffect(() => {
         const fetchPost = async () => {
@@ -27,8 +28,19 @@ const ViewPostScreen = () => {
 
     const [showSnippet, setShowSnippet] = useState(false);
 
-    const handleToggleCode = () => {
-        setShowSnippet((prevState) => !prevState);
+    const handleToggleCode = async () => {
+        if (!showSnippet) {
+            try {
+                // Fetch the file content from the codeSnippet URL
+                const response = await fetch(post.codeSnippet);
+                const content = await response.text(); // Read the response as text
+                setFileContent(content); // Store the fetched content
+            } catch (error) {
+                console.error('Error fetching file content:', error);
+                alert('Error fetching file content. Please try again.');
+            }
+        }
+        setShowSnippet((prevState) => !prevState); // Toggle visibility of the code snippet
     };
 
     if (loading) return <Loader />;
@@ -53,7 +65,9 @@ const ViewPostScreen = () => {
 
                                 {showSnippet && (
                                     <pre className="mt-4 bg-gray-100 p-4 rounded-md text-sm text-gray-800 overflow-auto">
-                                        <iframe src={post.codeSnippet} title="Code Snippet" width="100%" height="200"></iframe>
+                                        <code>
+                                            {fileContent || 'Loading...'} {/* Show the fetched content */}
+                                        </code>
                                     </pre>
                                 )}
                             </>

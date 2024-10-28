@@ -8,6 +8,7 @@ const GetPostScreen = () => {
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [fileContent, setFileContent] = useState({}); // New state for file content
 
     const { userInfo } = useSelector((state) => state.auth);
     const navigate = useNavigate();
@@ -34,11 +35,25 @@ const GetPostScreen = () => {
 
     const [showSnippet, setShowSnippet] = useState({});
 
-    const handleToggleCode = (postId) => {
-        setShowSnippet((prevState) => ({
-            ...prevState,
-            [postId]: !prevState[postId],
-        }));
+    const handleToggleCode = async (postId, codeSnippet) => {
+        try {
+            // Fetch the file content from the codeSnippet URL
+            const response = await fetch(codeSnippet);
+            const content = await response.text(); // Read the response as text
+            setFileContent((prev) => ({
+                ...prev,
+                [postId]: content, // Store the fetched content
+            }));
+
+            // Toggle visibility of the code snippet
+            setShowSnippet((prevState) => ({
+                ...prevState,
+                [postId]: !prevState[postId],
+            }));
+        } catch (error) {
+            console.error('Error fetching file content:', error);
+            alert('Error fetching file content. Please try again.');
+        }
     };
 
     return (
@@ -49,7 +64,8 @@ const GetPostScreen = () => {
                 {loading && <Loader />}
                 {error && <div className="text-red-500 mb-4">{error}</div>}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* Set grid-cols-1 for a vertical single-column layout */}
+                <div className="grid grid-cols-1 gap-6">
                     {posts.map((post) => (
                         <div key={post._id} className="bg-white shadow-md rounded-lg p-6">
                             <h2 className="text-xl font-bold mb-2">{post.title}</h2>
@@ -58,7 +74,7 @@ const GetPostScreen = () => {
                             {post.codeSnippet && (
                                 <>
                                     <button
-                                        onClick={() => handleToggleCode(post._id)}
+                                        onClick={() => handleToggleCode(post._id, post.codeSnippet)} // Pass the codeSnippet URL
                                         className="bg-blue-500 text-white px-4 py-2 rounded-md"
                                     >
                                         {showSnippet[post._id] ? 'Hide Code Snippet' : 'Show Code Snippet'}
@@ -67,8 +83,7 @@ const GetPostScreen = () => {
                                     {showSnippet[post._id] && (
                                         <pre className="mt-4 bg-gray-100 p-4 rounded-md text-sm text-gray-800 overflow-auto">
                                             <code>
-                                                {/* Embed the URL directly as it’s public */}
-                                                <iframe src={post.codeSnippet} title="Code Snippet" width="100%" height="200"></iframe>
+                                                {fileContent[post._id] || 'Loading...'} {/* Show the fetched content */}
                                             </code>
                                         </pre>
                                     )}

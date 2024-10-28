@@ -10,6 +10,8 @@ const CreatePostScreen = () => {
     const [content, setContent] = useState('');
     const [codeSnippet, setCodeSnippet] = useState('');
     const [language, setLanguage] = useState('C++');  // Default language
+    const [file, setFile] = useState(null);  // New state for file upload
+    const [uploadOption, setUploadOption] = useState('codeSnippet');  // Toggle between codeSnippet and file
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -27,21 +29,31 @@ const CreatePostScreen = () => {
     const submitHandler = async (e) => {
         e.preventDefault();
 
-        if (!title || !content || !codeSnippet || !language) {
+        if (!title || !content || (!codeSnippet && uploadOption === 'codeSnippet') || (!file && uploadOption === 'file')) {
             setError('All fields are required');
             return;
         }
 
         setLoading(true);
         try {
+            const formData = new FormData();
+            formData.append('title', title);
+            formData.append('content', content);
+            if (uploadOption === 'codeSnippet') {
+                formData.append('codeSnippet', codeSnippet);
+                formData.append('language', language);
+            } else {
+                formData.append('file', file);  // Append the file to formData
+            }
+
             const config = {
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'multipart/form-data',
                     Authorization: `Bearer ${userInfo.token}`,  // Ensure that the user is authenticated
                 },
             };
 
-            const { data } = await axios.post('/api/posts', { title, content, codeSnippet, language }, config);
+            await axios.post('/api/posts', formData, config);
 
             setLoading(false);
             navigate('/posts');  // Redirect to the homepage or the posts list after successful submission
@@ -86,34 +98,77 @@ const CreatePostScreen = () => {
                         ></textarea>
                     </div>
 
-                    {/* Code Snippet Input */}
+                    {/* Upload Option Toggle */}
                     <div>
-                        <label htmlFor="codeSnippet" className="block text-sm font-medium text-gray-700">Code Snippet</label>
-                        <textarea
-                            id="codeSnippet"
-                            rows="10"
-                            value={codeSnippet}
-                            onChange={(e) => setCodeSnippet(e.target.value)}
-                            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                            placeholder="Enter code snippet"
-                        ></textarea>
+                        <label className="block text-sm font-medium text-gray-700">Upload Option</label>
+                        <div className="flex items-center mt-1">
+                            <label className="mr-4">
+                                <input
+                                    type="radio"
+                                    name="uploadOption"
+                                    value="codeSnippet"
+                                    checked={uploadOption === 'codeSnippet'}
+                                    onChange={() => setUploadOption('codeSnippet')}
+                                />
+                                <span className="ml-2">Code Snippet</span>
+                            </label>
+                            <label>
+                                <input
+                                    type="radio"
+                                    name="uploadOption"
+                                    value="file"
+                                    checked={uploadOption === 'file'}
+                                    onChange={() => setUploadOption('file')}
+                                />
+                                <span className="ml-2">File Upload</span>
+                            </label>
+                        </div>
                     </div>
 
-                    {/* Language Dropdown */}
-                    <div>
-                        <label htmlFor="language" className="block text-sm font-medium text-gray-700">Programming Language</label>
-                        <select
-                            id="language"
-                            value={language}
-                            onChange={(e) => setLanguage(e.target.value)}
-                            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        >
-                            <option value="C++">C++</option>
-                            <option value="Python">Python</option>
-                            <option value="JavaScript">JavaScript</option>
-                            <option value="Java">Java</option>
-                        </select>
-                    </div>
+                    {/* Conditionally Render Code Snippet or File Upload */}
+                    {uploadOption === 'codeSnippet' ? (
+                        <>
+                            {/* Code Snippet Input */}
+                            <div>
+                                <label htmlFor="codeSnippet" className="block text-sm font-medium text-gray-700">Code Snippet</label>
+                                <textarea
+                                    id="codeSnippet"
+                                    rows="10"
+                                    value={codeSnippet}
+                                    onChange={(e) => setCodeSnippet(e.target.value)}
+                                    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    placeholder="Enter code snippet"
+                                ></textarea>
+                            </div>
+
+                            {/* Language Dropdown */}
+                            <div>
+                                <label htmlFor="language" className="block text-sm font-medium text-gray-700">Programming Language</label>
+                                <select
+                                    id="language"
+                                    value={language}
+                                    onChange={(e) => setLanguage(e.target.value)}
+                                    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                >
+                                    <option value="C++">C++</option>
+                                    <option value="Python">Python</option>
+                                    <option value="JavaScript">JavaScript</option>
+                                    <option value="Java">Java</option>
+                                </select>
+                            </div>
+                        </>
+                    ) : (
+                        <div>
+                            {/* File Upload Input */}
+                            <label htmlFor="file" className="block text-sm font-medium text-gray-700">Upload File</label>
+                            <input
+                                type="file"
+                                id="file"
+                                onChange={(e) => setFile(e.target.files[0])}
+                                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            />
+                        </div>
+                    )}
 
                     {/* Submit Button */}
                     <button
