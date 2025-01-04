@@ -82,26 +82,6 @@ View and manage notifications for your activities.
 
 Upload and manage files with MinIO.
 
-Project Structure
-
-mini-stack-overflow-clone/
-├── backend/
-│   ├── routes/
-│   ├── controllers/
-│   ├── models/
-│   ├── server.js
-│   └── ...
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   └── ...
-│   └── ...
-├── docker-compose.yml
-├── nginx/
-│   └── default.conf
-└── README.md
-
 Contributing
 
 Contributions are welcome! To contribute:
